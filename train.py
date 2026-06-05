@@ -10,10 +10,8 @@ from dataset import MODISDataset
 from model import TrendAwareNet
 from losses import total_loss
 
-device = torch.device("cpu")
-torch.set_num_threads(8)
+device = torch.device("cuda")
 print("Device:", device)
-
 
 train_dataset = MODISDataset("./Processed", "train")
 val_dataset = MODISDataset("./Processed", "val")
@@ -22,27 +20,29 @@ print("Train:", len(train_dataset))
 print("Val:", len(val_dataset))
 print("Test:", len(test_dataset))
 
-#loader = DataLoader(dataset, batch_size=64, shuffle=True, num_workers=0)
 train_loader = DataLoader(
     train_dataset,
-    batch_size=128,
+    batch_size=512,
     shuffle=True,
-    num_workers=0,
+    num_workers=4,
+    pin_memory=True,
     drop_last=True
 )
 
 val_loader = DataLoader(
     val_dataset,
-    batch_size=128,
+    batch_size=512,
     shuffle=False,
-    num_workers=0
+    num_workers=4,
+    pin_memory=True
 )
 
 test_loader = DataLoader(
     test_dataset,
-    batch_size=128,
+    batch_size=512,
     shuffle=False,
-    num_workers=0
+    num_workers=4,
+    pin_memory=True
 )
 
 def evaluate(model, loader):
@@ -50,9 +50,9 @@ def evaluate(model, loader):
     total_val_loss = 0
     with torch.no_grad():
         for x_obs, mask, gt in tqdm(loader, desc="Validation", leave=False, ncols=120):
-            x_obs = x_obs.to(device)
-            mask = mask.to(device)
-            gt = gt.to(device)
+            x_obs = x_obs.to(device, non_blocking=True)
+            mask = mask.to(device, non_blocking=True)
+            gt = gt.to(device, non_blocking=True)
             pred = model(x_obs, mask)
             #print(type(total_loss))
             #print(total_loss)
@@ -76,9 +76,9 @@ for epoch in range(epochs):
     train_loss = 0
     pbar = tqdm(train_loader, desc=f"Epoch [{epoch+1}/{epochs}]", ncols=120)
     for batch_idx, (x_obs, mask, gt) in enumerate(pbar):
-        x_obs = x_obs.to(device)
-        mask = mask.to(device)
-        gt = gt.to(device)
+        x_obs = x_obs.to(device, non_blocking=True)
+        mask = mask.to(device, non_blocking=True)
+        gt = gt.to(device, non_blocking=True)
         pred = model(x_obs, mask)
         loss = total_loss(pred, gt, mask)
         optimizer.zero_grad()
