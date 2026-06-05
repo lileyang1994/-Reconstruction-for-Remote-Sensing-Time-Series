@@ -20,7 +20,7 @@ test_loader = DataLoader(
 
 print("Test samples:", len(test_dataset))
 model = TrendAwareNet()
-model.load_state_dict(torch.load("/home/lenovo/lly/reconstruction/best_model.pth", map_location=device))
+model.load_state_dict(torch.load("./best_model.pth", map_location=device))
 model.to(device)
 model.eval()
 print("Model loaded.")
