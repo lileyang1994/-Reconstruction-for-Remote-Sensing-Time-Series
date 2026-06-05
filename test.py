@@ -1,20 +1,13 @@
 import torch
 import numpy as np
-
 from torch.utils.data import DataLoader
-from sklearn.metrics import (
-    mean_absolute_error,
-    mean_squared_error,
-    r2_score
-)
-
+from sklearn.metrics import mean_absolute_error, mean_squared_error,r2_score
 from dataset import MODISDataset
 from model import TrendAwareNet
 
-device = torch.device("cpu")
-
+device = torch.device("cuda")
 test_dataset = MODISDataset(
-    root="Processed",
+    root="./Processed",
     split="test"
 )
 
@@ -27,7 +20,7 @@ test_loader = DataLoader(
 
 print("Test samples:", len(test_dataset))
 model = TrendAwareNet()
-model.load_state_dict(torch.load("best_model.pth", map_location=device))
+model.load_state_dict(torch.load("/home/lenovo/lly/reconstruction/best_model.pth", map_location=device))
 model.to(device)
 model.eval()
 print("Model loaded.")
@@ -65,13 +58,10 @@ gt_missing = gts[missing]
 
 #####MAE
 mae = mean_absolute_error(gt_missing, pred_missing)
-
 #####RMSE
 rmse = np.sqrt(mean_squared_error(gt_missing, pred_missing))
-
 #####R2
 r2 = r2_score(gt_missing, pred_missing)
-
 #####Trend Correlation
 trend_corr_list = []
 
@@ -83,9 +73,7 @@ for i in range(len(preds)):
         trend_corr_list.append(corr)
 
 trend_corr = np.mean(trend_corr_list)
-
 smooth_error = np.mean(np.abs(np.diff(preds, axis=1) - np.diff(gts, axis=1)))
-
 print("="*50)
 print("RMSE  :", rmse)
 print("MAE   :", mae)
@@ -93,3 +81,8 @@ print("R2    :", r2)
 print("TC    :", trend_corr)
 print("TSE   :", smooth_error)
 print("="*50)
+
+np.save("predictions.npy", preds)
+np.save("groundtruth.npy", gts)
+np.save("mask.npy", masks)
+np.save("observed.npy", obs)
