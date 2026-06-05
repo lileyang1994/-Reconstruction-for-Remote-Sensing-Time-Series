@@ -10,21 +10,10 @@ SAVE_DIR = r".\MOD13Q1\Processed"
 os.makedirs(SAVE_DIR, exist_ok=True)
 
 
-ndvi_files = sorted(
-    glob.glob(
-        os.path.join(ROOT, "*NDVI*.tif")
-    )
-)
-
-qa_files = sorted(
-    glob.glob(
-        os.path.join(ROOT, "*VI_Quality*.tif")
-    )
-)
-
+ndvi_files = sorted(glob.glob(os.path.join(ROOT, "*NDVI*.tif")))
+qa_files = sorted(glob.glob(os.path.join(ROOT, "*VI_Quality*.tif")))
 print("NDVI:", len(ndvi_files))
 print("QA  :", len(qa_files))
-
 assert len(ndvi_files) == len(qa_files)
 
 # ==================================================
@@ -33,10 +22,7 @@ assert len(ndvi_files) == len(qa_files)
 
 ndvi_cube = []
 mask_cube = []
-for ndvi_path, qa_path in tqdm(
-        zip(ndvi_files, qa_files),
-        total=len(ndvi_files)):
-
+for ndvi_path, qa_path in tqdm(zip(ndvi_files, qa_files), total=len(ndvi_files)):
     with rasterio.open(ndvi_path) as src:
         ndvi = src.read(1).astype(np.float32)
     with rasterio.open(qa_path) as src:
@@ -66,7 +52,7 @@ print("Raw samples:", X.shape)
 # ==================================================
 
 valid = np.ones(len(X), dtype=bool)
-# 至少50个有效观测
+
 valid &= (Mask.sum(axis=1) > 50)
 
 valid &= (X.max(axis=1) < 1.0)
@@ -79,21 +65,9 @@ print("Valid samples:", X.shape)
 X_obs = X.copy()
 X_obs[Mask == 0] = 0
 
-np.save(
-    os.path.join(SAVE_DIR, "X.npy"),
-    X
-)
-
-np.save(
-    os.path.join(SAVE_DIR, "Mask.npy"),
-    Mask
-)
-
-np.save(
-    os.path.join(SAVE_DIR, "X_obs.npy"),
-    X_obs
-)
-
+np.save(os.path.join(SAVE_DIR, "X.npy"), X)
+np.save(os.pah.join(SAVE_DIR, "Mask.npy"), Mask)
+np.save(os.path.join(SAVE_DIR, "X_obs.npy"), X_obs)
 print("Saved")
 
 print("X     :", X.shape)
