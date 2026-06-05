@@ -5,8 +5,8 @@ import rasterio
 from tqdm import tqdm
 
 
-ROOT = r"D:\Learn\database\MOD13Q1\image"
-SAVE_DIR = r"D:\Learn\database\MOD13Q1\Processed"
+ROOT = r".\MOD13Q1\image"
+SAVE_DIR = r".\MOD13Q1\Processed"
 os.makedirs(SAVE_DIR, exist_ok=True)
 
 
