@@ -2,7 +2,7 @@
 Remote sensing time-series missing data reconstruction algorithm implementation.
 
 ## Project Overview
-This repository contains source codes for the submitted papper "Trend-preserving Reconstruction for Remote Sensing Time Series under Non-random
+This repository contains source codes of the submitted papper "Trend-preserving Reconstruction for Remote Sensing Time Series under Non-random
 Missingness"
 
 ## Data Preparation
