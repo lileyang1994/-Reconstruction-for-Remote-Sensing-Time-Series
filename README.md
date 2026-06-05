@@ -10,6 +10,7 @@ Missingness"
 2. Run `build_data.py` to convert the original dataset into formatted time series data:
 ```bash
 python build_data.py
+
 3. Run 'split_dataset.py' to split the processed data into training, validation, and test sets:
 ```bash
 python split_dataset.py
